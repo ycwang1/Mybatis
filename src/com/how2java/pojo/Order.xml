@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper	namespace="com.how2java.pojo">
+    	<resultMap type="Order" id="orderBean">
+    		<id column="oid" property="id"/>
+    		<result column="code" property="code"/>
+    		
+    		<!-- 与orderitem一对多关系 -->
+    		<collection property="orderItems" ofType="OrderItem">
+    			<id column="oiid" property="id"/>
+    			<result column="number" property="number"/>
+    			<!-- 与product多对一关系 -->
+    			<association property="product" javaType="Product">
+    				<id column="pid" property="id"/>
+    				<result column="pname" property="name"/>
+    				<result column="price" property="price"/>
+    			</association>
+    		</collection>
+    	</resultMap>
+    	<select id="findOrderProduct" resultMap="orderBean">
+    	SELECT o.id AS 'oid',o.code AS 'code',oi.id AS 'oiid',oi.number AS 'number',p.id AS 'pid',p.name AS 'pname',p.price AS 'price'
+ 			FROM how2java.order o 
+    		LEFT JOIN order_item oi ON o.id=oi.oid
+    		LEFT JOIN product p ON p.id=oi.pid
+    	</select>
+    	<select id="findOrderProductById" resultMap="orderBean" parameterType="int">
+    	SELECT o.id AS 'oid',o.code AS 'code',oi.id AS 'oiid',oi.number AS 'number',p.id AS 'pid',p.name AS 'pname',p.price AS 'price'
+ 			FROM how2java.order o 
+    		LEFT JOIN order_item oi ON o.id=oi.oid
+    		LEFT JOIN product p ON p.id=oi.pid
+    		WHERE o.id=#{id}
+    	</select>
+    	<select id="findOrder" resultType="Order">
+    		select * from how2java.order 
+    		where id in
+    		<foreach item="item" index="index" collection="list"
+                    open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+    	</select>
+    </mapper>

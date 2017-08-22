@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.how2java.pojo">
+    	<!-- 并没有查找 -->
+    	<!-- <resultMap type="OrderItem" id="orderItemBean">
+    		<id column="oiid" property="id"/>
+    		<result column="number" property="number"/>
+    		与order表一对多关系
+    		<association property="order" javaType="Order">
+    			<id column="oid" property="id"/>
+    			<result column="code" property="code"/>
+    		</association>
+    		与product表一对多关系
+    		<association property="product" javaType="Product">
+    			<id column="pid" property="id"/>
+    			<result column="pname" property="name"/>
+    			<result column="price" property="price"/>
+    		</association>
+    	</resultMap> -->
+    	<insert id="addOrderItem" parameterType="OrderItem">
+    	    	insert into order_item 
+    	    	values(null,#{order.id},#{product.id},#{number}) 
+    	</insert>
+    	<delete id="deleteOrderItem" parameterType="OrderItem">
+    		delete from order_item
+    		where pid=#{product.id} and oid=#{order.id}
+    	</delete>
+    </mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper	namespace="com.how2java.pojo">
+    	<resultMap type="Product" id="findProductAndCategory">
+    		<id column="pid" property="id"/>
+    		<result column="pname" property="name"/>
+    		<result column="price" property="price"/>
+    		<!-- 多对一的关系 -->
+            <!-- property: 指的是属性名称, javaType：指的是属性的类型 -->
+            <association property="category" javaType="Category">
+            	<id column="cid" property="id"/>
+            	<result column="cname" property="name"/>
+            </association>
+    	</resultMap>
+    	<select id="findProductCategory" resultMap="findProductAndCategory">
+    		select p.id as 'pid',p.name as 'pname',p.price as 'price',c.id as 'cid',c.name as 'cname' from product p left join category c on p.cid=c.id
+    	</select>
+    	<select id="listProduct" resultType="Product">
+    		select * from product
+    		<!-- <where>
+	    		<if test="name!=null">
+	    			and name like concat('%',#{name},'%')
+	    		</if>
+	    		<if test="price!=0 and price!=null">
+	    			and price>=#{price}
+	    		</if>
+    		</where> -->
+    			<where>
+ 				<choose>
+ 					<when test="name!=null">
+ 						and name like concat('%',#{name},'%')
+ 					</when>
+ 					<when test="price!=0 and price !=null">
+ 						and price >#{price}
+ 					</when>
+ 					<otherwise>
+ 						and id>1
+ 					</otherwise>
+ 				</choose>
+ 			</where>
+    		
+    	</select>
+    	<insert id="addProduct" parameterType="Product">
+    		insert into product(name,price)values (#{name},#{price})
+    	</insert>
+    	<delete id="deleteProduct" parameterType="Product" >
+            delete from product where id= #{id}   
+        </delete>
+        <update id="updateProduct" parameterType="Product" >
+            update product
+            <set>
+				<if test="name!=null">
+					 name=#{name},
+				</if>
+				<if test="price!=0 and price!=null">
+					 price =#{price}
+				</if>
+			</set>
+			where id =#{id}
+        </update>
+        <select id="findProduct" resultType="Product" parameterType="int">
+    		select * from product where id=#{id}
+    	</select>
+    	<!-- 模糊查询 -->
+    	<select id="findProductByName" resultType="Product" parameterType="String">
+    		select * from product where name like concat('%',#{0},'%')
+    	</select>
+    	<select id="findProductByname" resultType="Product" parameterType="String">
+    		<bind name="likename" value="'%'+name+'%'"/>
+    		select * from product where name like #{likename}
+    	</select>
+    	<select id="findProductByNameAndId" resultType="Product" parameterType="map">
+    		select * from product where id > #{id} and name like concat('%',#{name},'%')
+    	</select>
+    </mapper>
